@@ -15,7 +15,7 @@ namespace RabbitSignalrNotifications.Web.Notifications
         {
             _connectionsRepo = connectionsRepo;
         }
-        
+
         public override Task OnConnectedAsync()
         {
             var username = Guid.Parse(Context.GetHttpContext().Request.Query["user"]);
@@ -30,10 +30,11 @@ namespace RabbitSignalrNotifications.Web.Notifications
                 {
                     Context.ConnectionId
                 };
-                _connectionsRepo.Clients[username] =  userConnections;
+                _connectionsRepo.Clients[username] = userConnections;
             }
 
-            Task.Run(async () => await Groups.AddToGroupAsync(Context.ConnectionId, username.ToString(), CancellationToken.None));
+            Task.Run(async () =>
+                await Groups.AddToGroupAsync(Context.ConnectionId, username.ToString(), CancellationToken.None));
             return base.OnConnectedAsync();
         }
 
@@ -41,10 +42,8 @@ namespace RabbitSignalrNotifications.Web.Notifications
         public override Task OnDisconnectedAsync(Exception ex)
         {
             foreach (var connections in _connectionsRepo.Clients.Values)
-            {
                 if (connections.Contains(Context.ConnectionId))
                     connections.Remove(Context.ConnectionId);
-            }
 
             return base.OnDisconnectedAsync(ex);
         }

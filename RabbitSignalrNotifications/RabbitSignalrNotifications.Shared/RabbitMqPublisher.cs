@@ -1,13 +1,15 @@
-﻿using RabbitMQ.Client;
+﻿using System.Text;
+using System.Text.Json;
+using RabbitMQ.Client;
 
 namespace RabbitSignalrNotifications.Shared
 {
     public class RabbitMqPublisher
     {
-        private readonly string _exchangeName;
+        private readonly IModel _channel;
 
         private readonly IConnection _connection;
-        private readonly IModel _channel;
+        private readonly string _exchangeName;
         private readonly IBasicProperties _properties;
 
         public RabbitMqPublisher(string exchangeName, IConnectionFactory connectionFactory)
@@ -20,9 +22,9 @@ namespace RabbitSignalrNotifications.Shared
             using (var channel = connection.CreateModel())
             {
                 channel.ExchangeDeclare(
-                    exchange: _exchangeName,
-                    type: ExchangeType.Direct,
-                    durable: true);
+                    _exchangeName,
+                    ExchangeType.Direct,
+                    true);
             }
 
             _channel = _connection.CreateModel();
@@ -31,13 +33,13 @@ namespace RabbitSignalrNotifications.Shared
         }
 
 
-        public void Publish(string routingKey, byte[] data)
+        public void Publish<T>(string routingKey, T data)
         {
             _channel.BasicPublish(
-                exchange: _exchangeName,
-                routingKey: routingKey,
-                basicProperties: _properties,
-                body: data);
+                _exchangeName,
+                routingKey,
+                _properties,
+                Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)));
         }
 
         public void Dispose()

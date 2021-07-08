@@ -4,6 +4,11 @@ namespace RabbitSignalrNotifications.Shared
 {
     public class WeatherForecast
     {
+        private static readonly string[] Summaries =
+        {
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
+
         public DateTime Date { get; set; }
 
         public int TemperatureC { get; set; }
@@ -22,10 +27,5 @@ namespace RabbitSignalrNotifications.Shared
                 Summary = Summaries[rng.Next(Summaries.Length)]
             };
         }
-        
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
     }
 }
