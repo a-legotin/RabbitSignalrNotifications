@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitSignalrNotifications.Web", "RabbitSignalrNotifications.Web\RabbitSignalrNotifications.Web.csproj", "{689CF576-9241-46A6-81E0-0AE9C673511E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastructure", "{C5665D24-EC27-4FFA-B003-0E90D495168F}"
+ProjectSection(SolutionItems) = preProject
+	..\.gitlab-ci.yml = ..\.gitlab-ci.yml
+	..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
+EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{689CF576-9241-46A6-81E0-0AE9C673511E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{689CF576-9241-46A6-81E0-0AE9C673511E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{689CF576-9241-46A6-81E0-0AE9C673511E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{689CF576-9241-46A6-81E0-0AE9C673511E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
