@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using RabbitSignalrNotifications.Web.Notifications;
+using RabbitSignalrNotifications.Web.Repositories;
 
 namespace RabbitSignalrNotifications.Web
 {
@@ -33,6 +34,8 @@ namespace RabbitSignalrNotifications.Web
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "RabbitSignalrNotifications.Web", Version = "v1"});
             });
             services.AddSignalR();
+            services.AddSingleton<IWeatherForecastRepo>(new WeatherForecastRepo());
+            services.AddSingleton<IConnectionsRepo>(new ConnectionsRepo());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,9 +51,7 @@ namespace RabbitSignalrNotifications.Web
                         c.SwaggerEndpoint("/swagger/v1/swagger.json", "RabbitSignalrNotifications.Web v1");
                     });
             }
-
-            app.UseHttpsRedirection();
-
+            
             app.UseRouting();
 
             app.UseAuthorization();

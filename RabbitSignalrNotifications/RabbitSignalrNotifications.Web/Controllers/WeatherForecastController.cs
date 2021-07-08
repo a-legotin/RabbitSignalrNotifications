@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using RabbitSignalrNotifications.Shared;
+using RabbitSignalrNotifications.Web.Repositories;
 
 namespace RabbitSignalrNotifications.Web.Controllers
 {
@@ -11,29 +13,28 @@ namespace RabbitSignalrNotifications.Web.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IWeatherForecastRepo _repo;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherForecastRepo repo)
         {
             _logger = logger;
+            _repo = repo;
         }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-                {
-                    Date = DateTime.Now.AddDays(index),
-                    TemperatureC = rng.Next(-20, 55),
-                    Summary = Summaries[rng.Next(Summaries.Length)]
-                })
-                .ToArray();
+            _logger.LogDebug("Getting all forecasts");
+            return _repo.Forecasts.ToArray();
+        }
+        
+        [HttpPost]
+        public IActionResult Post([FromBody] WeatherForecast forecast)
+        {
+            _logger.LogDebug("Inserting forecast");
+            _repo.Forecasts.Add(forecast);
+            return Ok();
         }
     }
 }

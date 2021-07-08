@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using RabbitSignalrNotifications.Web.Repositories;
 
 namespace RabbitSignalrNotifications.Web.Notifications
 {
-    public class NotificationHub : Hub
+    internal class NotificationHub : Hub
     {
-        public NotificationHub()
+        private readonly IConnectionsRepo _connectionsRepo;
+
+        public NotificationHub(IConnectionsRepo connectionsRepo)
         {
+            _connectionsRepo = connectionsRepo;
         }
         
         public override Task OnConnectedAsync()
         {
             var username = Guid.Parse(Context.GetHttpContext().Request.Query["user"]);
 
-            if (ConnectionsRepo.Clients.TryGetValue(username, out var connections))
+            if (_connectionsRepo.Clients.TryGetValue(username, out var connections))
             {
                 connections.Add(Context.ConnectionId);
             }
@@ -26,7 +30,7 @@ namespace RabbitSignalrNotifications.Web.Notifications
                 {
                     Context.ConnectionId
                 };
-                ConnectionsRepo.Clients[username] =  userConnections;
+                _connectionsRepo.Clients[username] =  userConnections;
             }
 
             Task.Run(async () => await Groups.AddToGroupAsync(Context.ConnectionId, username.ToString(), CancellationToken.None));
@@ -36,7 +40,7 @@ namespace RabbitSignalrNotifications.Web.Notifications
 
         public override Task OnDisconnectedAsync(Exception ex)
         {
-            foreach (var connections in ConnectionsRepo.Clients.Values)
+            foreach (var connections in _connectionsRepo.Clients.Values)
             {
                 if (connections.Contains(Context.ConnectionId))
                     connections.Remove(Context.ConnectionId);
