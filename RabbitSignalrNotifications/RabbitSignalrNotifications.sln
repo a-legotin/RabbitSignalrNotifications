@@ -8,6 +8,12 @@ ProjectSection(SolutionItems) = preProject
 	..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitSignalrNotifications.Shared", "RabbitSignalrNotifications.Shared\RabbitSignalrNotifications.Shared.csproj", "{A853BD0D-8B49-42F0-BF22-5788E6491911}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitSignalrNotifications.WorkerService", "RabbitSignalrNotifications.WorkerService\RabbitSignalrNotifications.WorkerService.csproj", "{8DF28A9F-E79E-4158-B3B3-C2218C2927D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitSignalrNotifications.Client", "RabbitSignalrNotifications.Client\RabbitSignalrNotifications.Client.csproj", "{AA375F5A-9089-425E-AB16-792B27AE0222}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,17 @@ Global
 		{689CF576-9241-46A6-81E0-0AE9C673511E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{689CF576-9241-46A6-81E0-0AE9C673511E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{689CF576-9241-46A6-81E0-0AE9C673511E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A853BD0D-8B49-42F0-BF22-5788E6491911}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A853BD0D-8B49-42F0-BF22-5788E6491911}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A853BD0D-8B49-42F0-BF22-5788E6491911}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A853BD0D-8B49-42F0-BF22-5788E6491911}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DF28A9F-E79E-4158-B3B3-C2218C2927D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DF28A9F-E79E-4158-B3B3-C2218C2927D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DF28A9F-E79E-4158-B3B3-C2218C2927D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DF28A9F-E79E-4158-B3B3-C2218C2927D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA375F5A-9089-425E-AB16-792B27AE0222}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA375F5A-9089-425E-AB16-792B27AE0222}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA375F5A-9089-425E-AB16-792B27AE0222}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA375F5A-9089-425E-AB16-792B27AE0222}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
