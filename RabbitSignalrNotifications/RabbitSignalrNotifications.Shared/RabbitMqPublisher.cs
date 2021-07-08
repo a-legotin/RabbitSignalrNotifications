@@ -1,10 +1,11 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Text.Json;
 using RabbitMQ.Client;
 
 namespace RabbitSignalrNotifications.Shared
 {
-    public class RabbitMqPublisher
+    public class RabbitMqPublisher : IDisposable
     {
         private readonly IModel _channel;
 
@@ -32,6 +33,12 @@ namespace RabbitSignalrNotifications.Shared
             _properties.Persistent = true;
         }
 
+        public void Dispose()
+        {
+            _connection?.Dispose();
+            _channel?.Dispose();
+        }
+
 
         public void Publish<T>(string routingKey, T data)
         {
@@ -40,12 +47,6 @@ namespace RabbitSignalrNotifications.Shared
                 routingKey,
                 _properties,
                 Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)));
-        }
-
-        public void Dispose()
-        {
-            _connection?.Dispose();
-            _channel?.Dispose();
         }
     }
 }

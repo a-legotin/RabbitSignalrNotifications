@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using RabbitMQ.Client;
 
 namespace RabbitSignalrNotifications.Shared
@@ -12,10 +11,5 @@ namespace RabbitSignalrNotifications.Shared
                 Uri = RabbitMqOptions.RabbitUrl
             };
         }
-    }
-
-    public interface IMessageHandler<T>
-    {
-        Task<bool> Handle(T obj);
     }
 }

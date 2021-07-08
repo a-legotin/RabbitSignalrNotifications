@@ -1,50 +1,66 @@
-using System;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Hosting;
 using RabbitSignalrNotifications.Shared;
 
 namespace RabbitSignalrNotifications.Web.Notifications
 {
-    internal interface IWeatherForecastNotifier
-    {
-        void NotifyForecastAdded(WeatherForecast forecast);
-    }
-
-    internal class NotificationHubContext
+    internal class WeatherForecastNotificationService : BackgroundService
     {
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly RabbitMqPublisher _publisher;
+        private readonly RabbitMqSubscriber<WeatherForecast> _subscriber;
+        private readonly IWeatherForecastNotifier _weatherForecastNotifier;
 
-        public NotificationHubContext(IHubContext<NotificationHub> hubContext)
+        public WeatherForecastNotificationService(IHubContext<NotificationHub> hubContext,
+            IWeatherForecastNotifier weatherForecastNotifier)
         {
             _hubContext = hubContext;
+            _weatherForecastNotifier = weatherForecastNotifier;
+            _publisher = new RabbitMqPublisher(RabbitMqOptions.RabbitExchange, RabbitConnectionFactory.GetDefault());
+            _subscriber = new RabbitMqSubscriber<WeatherForecast>("web",
+                RabbitMqOptions.RabbitExchange,
+                RabbitMqRouting.ServiceToWeb,
+                RabbitConnectionFactory.GetDefault());
+            _subscriber.SetMessageHandler(MessageHandler);
         }
 
-        public async Task<bool> ProcessMessage(WeatherForecast forecast)
-        {
-            await _hubContext.Clients.All.SendAsync("MessageReceived", JsonSerializer.Serialize(forecast));
-            return true;
-        }
-    }
-
-    internal class WeatherForecastNotificationService : IWeatherForecastNotifier, IDisposable
-    {
-        private readonly RabbitMqPublisher _publisher;
-
-        public WeatherForecastNotificationService(RabbitMqPublisher publisher)
-        {
-            _publisher = publisher;
-        }
-
-        public void Dispose()
+        public override void Dispose()
         {
             _publisher.Dispose();
+            _subscriber.StopConsuming();
+            _subscriber.Dispose();
+            base.Dispose();
         }
 
-
-        public void NotifyForecastAdded(WeatherForecast forecast)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _publisher.Publish(RabbitMqRouting.WebToService, forecast);
+            await Task.Run(() =>
+            {
+                _subscriber.StartConsuming();
+                while (!_weatherForecastNotifier.IsCompleted)
+                {
+                    var forecast = _weatherForecastNotifier.Take();
+                    _publisher.Publish(RabbitMqRouting.WebToService, forecast);
+                }
+            }, stoppingToken);
+        }
+
+        public override async Task StopAsync(CancellationToken stoppingToken)
+        {
+            await Task.Run(() => _weatherForecastNotifier.CompleteAdding(), stoppingToken);
+            await base.StopAsync(stoppingToken);
+        }
+
+        private Task<bool> MessageHandler(WeatherForecast arg)
+        {
+            return Task.Run(() =>
+            {
+                _hubContext.Clients.All.SendAsync("MessageReceived", JsonSerializer.Serialize(arg));
+                return true;
+            });
         }
     }
 }

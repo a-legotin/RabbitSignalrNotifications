@@ -7,7 +7,7 @@ using RabbitMQ.Client.Events;
 
 namespace RabbitSignalrNotifications.Shared
 {
-    public class RabbitMqSubscriber<T>
+    public class RabbitMqSubscriber<T> : IDisposable
     {
         private readonly IModel _channel;
         private readonly IConnection _connection;
@@ -51,6 +51,12 @@ namespace RabbitSignalrNotifications.Shared
             };
         }
 
+        public void Dispose()
+        {
+            _connection?.Dispose();
+            _channel?.Dispose();
+        }
+
         public void SetMessageHandler(Func<T, Task<bool>> messageHandler)
         {
             _messageHandler = messageHandler;
@@ -67,12 +73,6 @@ namespace RabbitSignalrNotifications.Shared
         public void StopConsuming()
         {
             _channel.BasicCancel(_consumerTag);
-        }
-
-        public void Dispose()
-        {
-            _connection?.Dispose();
-            _channel?.Dispose();
         }
     }
 }

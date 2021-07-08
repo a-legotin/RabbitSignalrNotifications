@@ -1,11 +1,9 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using RabbitSignalrNotifications.Shared;
 using RabbitSignalrNotifications.Web.Notifications;
 using RabbitSignalrNotifications.Web.Repositories;
 
@@ -31,16 +29,9 @@ namespace RabbitSignalrNotifications.Web
             services.AddSignalR();
             services.AddSingleton<IWeatherForecastRepo, WeatherForecastRepo>();
             services.AddSingleton<IConnectionsRepo, ConnectionsRepo>();
-
-            var publisher = new RabbitMqPublisher(RabbitMqOptions.RabbitExchange, RabbitConnectionFactory.GetDefault());
-            var subscriber = new RabbitMqSubscriber<WeatherForecast>("web",
-                RabbitMqOptions.RabbitExchange,
-                RabbitMqRouting.ServiceToWeb,
-                RabbitConnectionFactory.GetDefault());
+            services.AddSingleton<IWeatherForecastNotifier, WeatherForecastNotifier>();
             services.AddSingleton<NotificationHubContext>();
-            subscriber.SetMessageHandler(forecast => { return Task.Run(() => true); });
-            subscriber.StartConsuming();
-            services.AddSingleton<IWeatherForecastNotifier>(new WeatherForecastNotificationService(publisher));
+            services.AddHostedService<WeatherForecastNotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
