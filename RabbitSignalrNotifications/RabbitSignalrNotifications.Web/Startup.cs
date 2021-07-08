@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using RabbitSignalrNotifications.Web.Notifications;
 
 namespace RabbitSignalrNotifications.Web
 {
@@ -31,6 +32,7 @@ namespace RabbitSignalrNotifications.Web
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "RabbitSignalrNotifications.Web", Version = "v1"});
             });
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,7 +43,10 @@ namespace RabbitSignalrNotifications.Web
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(
-                    c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "RabbitSignalrNotifications.Web v1"));
+                    c =>
+                    {
+                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "RabbitSignalrNotifications.Web v1");
+                    });
             }
 
             app.UseHttpsRedirection();
@@ -50,7 +55,11 @@ namespace RabbitSignalrNotifications.Web
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/api/notifications");
+            });
         }
     }
 }
